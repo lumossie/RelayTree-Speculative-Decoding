@@ -1,0 +1,9 @@
+RelayTree
+Copyright 2026 Tingyue Xue et al.
+
+This distribution contains modified portions of LLMSpeculativeSampling,
+originally copyright 2024 feifeibear (Jiarui Fang), licensed under Apache-2.0.
+
+The Tree-Attention model adapters reuse interfaces and implementation patterns
+from Hugging Face Transformers, which is licensed under Apache-2.0. Modified
+adapter files carry comments describing their changes.

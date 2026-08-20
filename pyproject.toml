@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "relaytree"
+version = "0.1.0"
+description = "Relay-assisted tree-based speculative decoding for edge-cloud LLM inference"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Tingyue Xue"},
+  {name = "Hanlei Li"},
+  {name = "Guangyi Zhang"},
+  {name = "Qiushuo Hou"},
+  {name = "Yunlong Cai"},
+  {name = "Guanding Yu"}
+]
+dependencies = [
+  "torch==2.7.0",
+  "transformers==4.47.0",
+  "accelerate==1.6.0",
+  "datasets==3.5.0",
+  "numpy==1.26.4"
+]
+
+[tool.setuptools.packages.find]
+include = ["relaytree*"]
