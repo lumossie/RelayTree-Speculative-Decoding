@@ -19,10 +19,9 @@ plotresult/               final figures used in the paper
 
 ## Paper Figures
 
-The repository includes only the five final PDF figures used in the paper:
+The repository includes only the three simulation-result PDF figures used in
+the paper:
 
-- `figure_01_full_edge_generation.pdf`
-- `figure_02_split_depth_relay_generation.pdf`
 - `figure_03_throughput_comparison.pdf`
 - `figure_04_temperature_sweep.pdf`
 - `figure_05_relay_deployment.pdf`
