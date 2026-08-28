@@ -189,6 +189,9 @@ class TreeMCSDSpecSamplingEnv:
             return output, elapsed
 
         self._set_strategy_q(0)
+        # These stages form one serialized critical path. replay_prefix_on_cloud
+        # consumes the complete prefix_output, so it cannot overlap the edge
+        # prefix generation (or its uplink) in this implementation.
         prefix_output, edge_time = self._timed(
             lambda: self.strategy.generate_prefix_draft(
                 self.prefix,
@@ -219,6 +222,8 @@ class TreeMCSDSpecSamplingEnv:
                 past_key_values=suffix_output.past_key_values,
                 cand_probs=tuple(prefix_output.cand_probs) + tuple(suffix_output.cand_probs),
             ),
+            # Keep the measured compute sum explicit: no synthetic edge/replay
+            # overlap is credited to any relay split depth.
             edge_time + replay_time + suffix_time,
         )
 

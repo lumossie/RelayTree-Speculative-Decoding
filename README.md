@@ -7,6 +7,11 @@ RelayTree lets an edge SLM generate a prefix subtree, sends only the prefix
 tokens to the cloud, reconstructs the SLM states through cloud replay, and then
 completes and verifies the draft tree with the cloud LLM.
 
+The reference benchmark uses the serialized critical path implemented by the
+code: edge prefix generation, uplink, cloud replay, cloud suffix generation,
+and target verification. It does not assume synthetic overlap between edge
+prefix generation and cloud replay.
+
 ## Structure
 
 ```text
