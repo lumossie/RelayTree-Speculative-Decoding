@@ -1,12 +1,6 @@
 # coding=utf-8
 # Copyright 2026
-#
-# This file is intentionally based on the transformers v4.37.2 Qwen2
-# implementation, but narrowed to the pieces this repo needs for Tree-MCSD.
-# The only functional changes are:
-#   (1) force the eager attention backend,
-#   (2) disable sliding-window attention, and
-#   (3) allow a boolean `tree_attn_mask` to override the default causal mask.
+# Qwen2 tree-attention adapter for Transformers 4.37.2.
 
 from __future__ import annotations
 

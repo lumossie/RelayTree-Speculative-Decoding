@@ -9,9 +9,7 @@ from relaytree.sampling.utils import lattice_based_quantization_torch
 
 @dataclass
 class DecoderOnlyDraftOutput(ModelOutput):
-    """
-    Base class for draft outputs of decoder-only generation models using speculative decoding.
-    """
+    """Decoder-only draft output."""
 
     sequences: torch.LongTensor = None
     past_key_values: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
@@ -27,9 +25,7 @@ class DecoderOnlyDraftReplayOutput(ModelOutput):
 
 @dataclass
 class DecoderOnlyVerificationOutput(ModelOutput):
-    """
-    Base class for verification outputs of decoder-only generation models using speculative decoding.
-    """
+    """Decoder-only verification output."""
 
     sequences: torch.LongTensor = None
     target_model_past_key_values: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
@@ -49,14 +45,12 @@ def _MCSSwoReplacement(
     if not torch.isfinite(ground_probs).all():
         ground_probs.copy_(_safe_normalize_probs(ground_probs))
 
-    # p0: original target distribution p (LLM) at this position
     p0 = ground_probs.clone()
     ground_probs.copy_(p0)
 
     for check_idx, cand_token in enumerate(cand_tokens):
         denom = cand_probs[cand_token]
 
-        # If the candidate prob is 0 (or invalid), accept whenever ground prob is positive.
         if (not torch.isfinite(denom)) or (denom <= 0):
             accept_threshold = torch.tensor(
                 1.0 if ground_probs[cand_token] > 0 else 0.0,
@@ -68,22 +62,18 @@ def _MCSSwoReplacement(
         if torch.rand(1, device=accept_threshold.device) <= accept_threshold:
             return check_idx
 
-        # ---- Reject branch: residual = (p - q)+ normalized ----
         residual = torch.relu(ground_probs - cand_probs)
         s = residual.sum()
 
         if (not torch.isfinite(s)) or (s <= 0):
-            # Degenerate residual: sample from target p (paper-friendly)
             ground_probs.copy_(p0)
             return None
 
         ground_probs.copy_(residual / s)
 
-        # Remove the checked candidate token from candidate distribution, then renormalize.
         cand_probs[cand_token] = 0
         s2 = cand_probs.sum()
         if (not torch.isfinite(s2)) or (s2 <= 0):
-            # If all mass removed, fall back to uniform over vocab.
             V = cand_probs.numel()
             cand_probs[:] = 1.0 / float(V)
         else:
@@ -98,7 +88,6 @@ def _safe_normalize_probs(probs: torch.Tensor) -> torch.Tensor:
     probs = torch.nan_to_num(probs, nan=0.0, posinf=0.0, neginf=0.0)
     probs = torch.clamp(probs, min=0.0)
     denom = probs.sum(dim=-1, keepdim=True)
-    # If a row sums to 0, fall back to uniform.
     V = probs.size(-1)
     uniform = torch.full_like(probs, 1.0 / float(V))
     probs = torch.where(denom > 0, probs / denom, uniform)
@@ -159,10 +148,7 @@ def get_tree_attn_self_mask(k_config: Tuple[int]):
     mask_size = prod_size.sum().item()
     attn_mask = torch.zeros((mask_size, mask_size), dtype=torch.bool)
     attn_mask = attn_mask.diagonal_scatter(torch.ones(mask_size))
-    # run BFS
-    idx_queue = [
-        (0, None, idx) for idx in list(range(k_config[0]))
-    ]  # each node: (depth, parent, idx)
+    idx_queue = [(0, None, idx) for idx in range(k_config[0])]
     while len(idx_queue) != 0:
         depth, parent, idx = idx_queue.pop(0)
         if parent is not None:
@@ -568,11 +554,12 @@ class TreeStrategy(Strategy):
             position_ids = tree_attn_mask.sum(dim=1) - 1
 
         else:
+            # KV omits the final context token.
             tree_attn_mask = torch.ones(
                 (
                     tree_attn_len + 1,
                     input_ids.size(1),
-                ),  # there is one token not stored in the kv values
+                ),
                 dtype=torch.bool,
                 device=self.target_model_device,
             )
@@ -594,9 +581,7 @@ class TreeStrategy(Strategy):
         hidden_states = outputs.last_hidden_state
         past_key_values = list(outputs.past_key_values)
 
-        logits = self.target_model.lm_head(
-            hidden_states[:, -tree_attn_len - 1 :]
-        )  # 1 x seq_len x hidden_dim
+        logits = self.target_model.lm_head(hidden_states[:, -tree_attn_len - 1 :])
         return logits, past_key_values
 
     def verify(
@@ -676,7 +661,7 @@ class TreeStrategy(Strategy):
             tree_indices = None
             keep_indices = context_indices
 
-        # The deepest drafted token has not entered the draft-model KV cache.
+        # Draft KV omits the deepest accepted token.
         if accepted_depth == active_depth and tree_indices is not None:
             if tree_indices.numel() > 1:
                 draft_keep_indices = torch.cat(

@@ -1,8 +1,4 @@
-"""Run the RelayTree reference implementation.
-
-Use ``python run.py --help`` for model, task, tree, quantization, and relay
-options. Defaults reproduce the main Pythia setting used in the paper.
-"""
+"""Run the RelayTree reference implementation."""
 
 from relaytree.benchmark import main
 

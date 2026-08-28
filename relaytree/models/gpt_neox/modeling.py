@@ -1,11 +1,6 @@
 # coding=utf-8
 # Copyright 2026
-#
-# This file provides a minimal, tree-attention-compatible GPT-NeoX
-# implementation. It reuses upstream `transformers.models.gpt_neox`
-# components and only patches:
-#   (1) causal-mask construction to accept a boolean `tree_attn_mask`, and
-#   (2) compatibility shims so Tree-MCSD can access `.model` and `.lm_head`.
+# Tree-attention adapter for the upstream GPT-NeoX implementation.
 
 from __future__ import annotations
 

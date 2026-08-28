@@ -58,7 +58,7 @@ class SpecSamplingEnv:
         self.uplink_rate = 1e9
 
         self.prefix = None
-        self.prifex_len = 0  # Historical spelling kept for runner compatibility.
+        self.prifex_len = 0  # Runner API typo.
         self.approx_past_key_values = None
         self.target_past_key_values = None
         self.total_time = 0.0
@@ -81,7 +81,7 @@ class SpecSamplingEnv:
         self.times_count = 0
 
     def _bits_per_distribution(self, q_level: int) -> int:
-        # The fixed 16 token bits match the historical QS paper baseline.
+        # QS uses 16-bit token IDs.
         return calculate_quantization_bits(q_level, self.vocab_size) + 16
 
     @torch.no_grad()

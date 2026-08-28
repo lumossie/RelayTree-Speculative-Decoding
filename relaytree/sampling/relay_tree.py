@@ -94,7 +94,7 @@ class TreeMCSDSpecSamplingEnv:
 
         self.prefix: Optional[torch.Tensor] = None
         self.prefix_len = 0
-        self.prifex_len = 0  # Historical spelling kept for runner compatibility.
+        self.prifex_len = 0  # Runner API typo.
         self.draft_model_past_key_values = None
         self.target_model_past_key_values = None
         self._reset_metrics()
