@@ -239,6 +239,33 @@ class TreeStrategy(Strategy):
         step_tree_attn_mask = torch.cat((context_attn_mask, step_tree_attn_self_mask), dim=1)
         return step_tree_attn_mask, position_ids
 
+    def _build_prefix_tree_mask(
+        self,
+        *,
+        split_depth: int,
+        context_input_length: int,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        prefix_tree_len = int(self.cumulative_prod_size[split_depth])
+        prefix_tree_attn_self_mask = self.tree_attn_self_mask[
+            :prefix_tree_len,
+            :prefix_tree_len,
+        ]
+        position_ids = (
+            prefix_tree_attn_self_mask.long().sum(dim=1)
+            + int(context_input_length)
+            - 1
+        ).unsqueeze(0)
+        context_attn_mask = torch.ones(
+            (prefix_tree_len, int(context_input_length)),
+            dtype=torch.bool,
+            device=self.draft_model_device,
+        )
+        tree_attn_mask = torch.cat(
+            (context_attn_mask, prefix_tree_attn_self_mask),
+            dim=1,
+        )
+        return tree_attn_mask, position_ids
+
     def _sample_tree_step(
         self,
         *,
@@ -419,29 +446,24 @@ class TreeStrategy(Strategy):
                 f"expected {expected_prefix_nodes}, got {replay_tree_tokens.size(1)}"
             )
 
-        offset = 0
-        for replay_step in range(split_depth):
-            width = int(self.prod_size[replay_step + 1])
-            step_tokens = replay_tree_tokens[:, offset : offset + width]
-            offset += width
-            step_tree_attn_mask, position_ids = self._build_tree_step_mask(
-                step=replay_step + 1,
-                context_input_length=init_input_length,
-            )
-            outputs = self.draft_model.model(
-                input_ids=step_tokens,
-                use_cache=True,
-                past_key_values=past_key_values,
-                return_dict=True,
-                output_attentions=False,
-                output_hidden_states=False,
-                tree_attn_mask=step_tree_attn_mask,
-                position_ids=position_ids,
-            )
-            hidden_states = outputs.last_hidden_state[0]
-            if replay_step == split_depth - 1:
-                logits = self.draft_model.lm_head(hidden_states)
-            past_key_values = list(outputs.past_key_values)
+        tree_attn_mask, position_ids = self._build_prefix_tree_mask(
+            split_depth=split_depth,
+            context_input_length=init_input_length,
+        )
+        outputs = self.draft_model.model(
+            input_ids=replay_tree_tokens,
+            use_cache=True,
+            past_key_values=past_key_values,
+            return_dict=True,
+            output_attentions=False,
+            output_hidden_states=False,
+            tree_attn_mask=tree_attn_mask,
+            position_ids=position_ids,
+        )
+        final_width = int(self.prod_size[split_depth])
+        final_hidden_states = outputs.last_hidden_state[0, -final_width:]
+        logits = self.draft_model.lm_head(final_hidden_states)
+        past_key_values = list(outputs.past_key_values)
 
         return DecoderOnlyDraftReplayOutput(
             past_key_values=past_key_values,
