@@ -7,11 +7,45 @@ Published in **IEEE Transactions on Vehicular Technology**, 2026.
 
 **[Read the paper on IEEE Xplore](https://ieeexplore.ieee.org/document/11723260)**
 | **[DOI: 10.1109/TVT.2026.3740714](https://doi.org/10.1109/TVT.2026.3740714)**
+| **[Quick start](#installation)**
 | **[Citation](#citation)**
 
-RelayTree lets an edge SLM generate a prefix subtree, sends only the prefix
-tokens to the cloud, reconstructs the SLM states through cloud replay, and then
-completes and verifies the draft tree with the cloud LLM.
+**Tree-based speculative decoding for LLM inference over bandwidth-limited
+edge-cloud links.** RelayTree splits draft-tree generation between an edge
+small language model (SLM) and the cloud. The edge sends prefix token IDs;
+a cloud-side SLM replica replays those tokens to recover the draft state,
+completes the tree, and passes it to the target LLM for verification.
+This lets the system share drafting work across the edge and cloud while
+keeping the prefix uplink payload small.
+
+## How RelayTree Works
+
+![RelayTree workflow: the edge SLM drafts a prefix subtree, sends its token IDs, and the cloud replays the prefix, completes the tree, and verifies candidates with the target LLM.](docs/assets/relaytree-overview.png)
+
+The split depth **s** controls how much of the tree is drafted at the edge.
+Cloud replay reconstructs the SLM state from the received prefix tokens before
+the remaining tree is generated. The target LLM then verifies the candidates
+and extends the output sequence. The diagram illustrates the relay scheme;
+the reference implementation also supports all-cloud and full-edge drafting.
+
+## Core Results
+
+**RelayTree achieves the highest token throughput among the four methods in
+all six task/model comparisons shown below.** The paper evaluates summarization,
+translation, and instruction following using Pythia-1B/12B and Qwen2.5-0.5B/14B.
+
+[![Paper Figure 3: token throughput in tokens per second for AS, QS, OPT-Tree, and RelayTree across summarization, translation, and Alpaca tasks, with Pythia and Qwen model pairs.](docs/assets/figure_03_throughput_comparison.png)](plotresult/figure_03_throughput_comparison.pdf)
+
+*Figure 3 from the paper. Higher throughput is better. Results apply to the
+experimental settings reported in the paper; the vertical axes have nonzero
+baselines and different ranges. Click the figure for the original PDF.*
+
+Performance depends on temperature and deployment: QS is faster at low
+temperatures in [Figure 4](plotresult/figure_04_temperature_sweep.pdf), while
+the all-cloud configuration has the highest throughput in the deployment
+comparison in [Figure 5](plotresult/figure_05_relay_deployment.pdf).
+See the [paper](https://ieeexplore.ieee.org/document/11723260) for the full
+experimental conditions and analysis.
 
 ## Structure
 
@@ -21,16 +55,16 @@ relaytree/sampling/       RelayTree, QS, and autoregressive decoding
 relaytree/inference/      tree construction, replay, and verification
 relaytree/models/         Pythia and Qwen2 Tree-Attention backends
 plotresult/               final figures used in the paper
+docs/assets/              README method diagram and figure preview
 ```
 
 ## Paper Figures
 
-The repository includes only the three simulation-result PDF figures used in
-the paper:
+The original simulation-result figures are available as PDFs:
 
-- `figure_03_throughput_comparison.pdf`
-- `figure_04_temperature_sweep.pdf`
-- `figure_05_relay_deployment.pdf`
+- [Figure 3: Throughput comparison](plotresult/figure_03_throughput_comparison.pdf)
+- [Figure 4: Temperature sweep](plotresult/figure_04_temperature_sweep.pdf)
+- [Figure 5: Relay deployment](plotresult/figure_05_relay_deployment.pdf)
 
 ## Installation
 
