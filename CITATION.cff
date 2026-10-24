@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use RelayTree in your research, please cite the paper below."
+type: software
+title: "RelayTree: PyTorch Reference Implementation"
+authors:
+  - family-names: Xue
+    given-names: Tingyue
+  - family-names: Li
+    given-names: Hanlei
+  - family-names: Zhang
+    given-names: Guangyi
+  - family-names: Hou
+    given-names: Qiushuo
+  - family-names: Cai
+    given-names: Yunlong
+  - family-names: Yu
+    given-names: Guanding
+repository-code: "https://github.com/lumossie/RelayTree-Speculative-Decoding"
+url: "https://github.com/lumossie/RelayTree-Speculative-Decoding"
+license: Apache-2.0
+preferred-citation:
+  type: article
+  title: "RelayTree: Relay-Assisted Tree-Based Speculative Decoding for Efficient Edge-Cloud LLM Inference"
+  authors:
+    - family-names: Xue
+      given-names: Tingyue
+    - family-names: Li
+      given-names: Hanlei
+    - family-names: Zhang
+      given-names: Guangyi
+    - family-names: Hou
+      given-names: Qiushuo
+    - family-names: Cai
+      given-names: Yunlong
+    - family-names: Yu
+      given-names: Guanding
+  journal: "IEEE Transactions on Vehicular Technology"
+  year: 2026
+  start: 1
+  end: 6
+  doi: "10.1109/TVT.2026.3740714"
+  url: "https://ieeexplore.ieee.org/document/11723260"

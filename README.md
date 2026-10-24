@@ -3,6 +3,12 @@
 PyTorch reference implementation of **“RelayTree: Relay-Assisted Tree-Based
 Speculative Decoding for Efficient Edge-Cloud LLM Inference.”**
 
+Published in **IEEE Transactions on Vehicular Technology**, 2026.
+
+**[Read the paper on IEEE Xplore](https://ieeexplore.ieee.org/document/11723260)**
+| **[DOI: 10.1109/TVT.2026.3740714](https://doi.org/10.1109/TVT.2026.3740714)**
+| **[Citation](#citation)**
+
 RelayTree lets an edge SLM generate a prefix subtree, sends only the prefix
 tokens to the cloud, reconstructs the SLM states through cloud replay, and then
 completes and verifies the draft tree with the cloud LLM.
@@ -76,12 +82,18 @@ this repository.
 
 ## Citation
 
+If you use RelayTree in your research, please cite the paper below. You can
+also use GitHub's **Cite this repository** button to copy the citation.
+
 ```bibtex
 @article{xue2026relaytree,
   title   = {RelayTree: Relay-Assisted Tree-Based Speculative Decoding for Efficient Edge-Cloud LLM Inference},
   author  = {Xue, Tingyue and Li, Hanlei and Zhang, Guangyi and Hou, Qiushuo and Cai, Yunlong and Yu, Guanding},
-  journal = {Submitted for publication},
-  year    = {2026}
+  journal = {IEEE Transactions on Vehicular Technology},
+  year    = {2026},
+  pages   = {1--6},
+  doi     = {10.1109/TVT.2026.3740714},
+  url     = {https://ieeexplore.ieee.org/document/11723260}
 }
 ```
 
