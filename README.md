@@ -119,9 +119,11 @@ python run.py \
   --num_eval 1 \
   --scheme relay \
   --tree_k 3,1,1 \
-  --relay_split_depth 1 \
-  --q_level 128
+  --relay_split_depth 1
 ```
+
+`--q_level` controls quantization for `edge_full` and the QS baseline; `relay`
+and `cloud_all` tree generation use unquantized distributions.
 
 Use `python run.py --help` for other model, dataset, tree, and communication
 options. The supported paper tasks are CNN/DailyMail summarization, WMT14
