@@ -20,6 +20,11 @@ keeping the prefix uplink payload small.
 
 ## How RelayTree Works
 
+[![Paper Figure 2: the edge generates a prefix subtree up to split depth s, uploads draft tokens, and the cloud replays the prefix, completes the tree, verifies it with the LLM, and returns feedback.](docs/assets/figure_02_relay_framework.png)](plotresult/figure_02_relay_framework.pdf)
+
+*Figure 2 from the paper: relay-assisted tree generation. Click the figure for
+the original PDF.*
+
 The split depth **s** controls how much of the tree is drafted at the edge.
 Cloud replay reconstructs the SLM state from the received prefix tokens before
 the remaining tree is generated. The target LLM then verifies the candidates
@@ -34,9 +39,31 @@ translation, and instruction following using Pythia-1B/12B and Qwen2.5-0.5B/14B.
 
 [![Paper Figure 3: token throughput in tokens per second for AS, QS, OPT-Tree, and RelayTree across summarization, translation, and Alpaca tasks, with Pythia and Qwen model pairs.](docs/assets/figure_03_throughput_comparison.png)](plotresult/figure_03_throughput_comparison.pdf)
 
-*Figure 3 from the paper. Higher throughput is better. Results apply to the
-experimental settings reported in the paper; the vertical axes have nonzero
-baselines and different ranges. Click the figure for the original PDF.*
+*Figure 3 from the paper. Q = 96 and 5 Mbps uplink for the edge-cloud schemes.
+Higher throughput is better; the vertical axes have nonzero baselines and
+different ranges. Click the figure for the original PDF.*
+
+### Relay deployment tradeoff
+
+The following excerpt from **Table II** compares relay deployment schemes on
+Alpaca. We show **RelayTree (s=1)** alongside the all-cloud and full-edge
+baselines; the paper includes the additional s=2 configuration.
+
+| Scheme | LLM verify<br>(fw/token) | Cloud SLM<br>(fw/token) | Uplink overhead<br>(bits/token) | Uplink latency<br>(ms) | Peak cloud memory<br>(GB) | Throughput<br>(tokens/s) |
+|:--|--:|--:|--:|--:|--:|--:|
+| All-cloud (s=0) | 0.3503 | 1.0508 | 0.00 | 0.00 | 24.70 | 50.13 |
+| **RelayTree (s=1)** | **0.3503** | **0.7006** | **16.81** | **2.15** | **24.79** | **48.35** |
+| Full-edge | 0.3680 | 0.0000 | 3360.40 | 430.13 | 22.71 | 38.74 |
+
+*Values are reproduced from Table II of the [paper](https://ieeexplore.ieee.org/document/11723260).
+fw/token denotes model forward passes per generated token. Bold identifies
+the selected RelayTree configuration, not the best value in each column.*
+
+RelayTree (s=1) reduces uplink overhead by **99.5%** relative to full-edge
+drafting and uses **about one-third fewer cloud-side SLM forward passes** than
+all-cloud drafting. Its throughput is **48.35 tokens/s**, compared with 38.74
+for full-edge and 50.13 for all-cloud, showing the communication-computation
+tradeoff.
 
 Performance depends on temperature and deployment: QS is faster at low
 temperatures in [Figure 4](plotresult/figure_04_temperature_sweep.pdf), while
@@ -52,14 +79,15 @@ run.py                    example and benchmark entry point
 relaytree/sampling/       RelayTree, QS, and autoregressive decoding
 relaytree/inference/      tree construction, replay, and verification
 relaytree/models/         Pythia and Qwen2 Tree-Attention backends
-plotresult/               final figures used in the paper
-docs/assets/              preview of the original paper figure
+plotresult/               original framework and simulation figures
+docs/assets/              previews of original paper figures
 ```
 
 ## Paper Figures
 
-The original simulation-result figures are available as PDFs:
+The original framework and simulation-result figures are available as PDFs:
 
+- [Figure 2: Relay-assisted tree generation](plotresult/figure_02_relay_framework.pdf)
 - [Figure 3: Throughput comparison](plotresult/figure_03_throughput_comparison.pdf)
 - [Figure 4: Temperature sweep](plotresult/figure_04_temperature_sweep.pdf)
 - [Figure 5: Relay deployment](plotresult/figure_05_relay_deployment.pdf)

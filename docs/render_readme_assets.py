@@ -1,4 +1,4 @@
-"""Render the README image directly from the original paper PDF.
+"""Render README images directly from the original paper PDFs.
 
 Requires PyMuPDF: python -m pip install pymupdf
 Run from any directory: python docs/render_readme_assets.py
@@ -19,6 +19,11 @@ def render_first_page(source: Path, destination: Path, scale: float) -> None:
 
 
 if __name__ == "__main__":
+    render_first_page(
+        ROOT / "plotresult" / "figure_02_relay_framework.pdf",
+        ASSETS / "figure_02_relay_framework.png",
+        4,
+    )
     render_first_page(
         ROOT / "plotresult" / "figure_03_throughput_comparison.pdf",
         ASSETS / "figure_03_throughput_comparison.png",
