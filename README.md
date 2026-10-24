@@ -10,6 +10,8 @@ Published in **IEEE Transactions on Vehicular Technology**, 2026.
 | **[Quick start](#installation)**
 | **[Citation](#citation)**
 
+First author: **Tingyue Xue** · [Google Scholar](https://scholar.google.com/citations?user=2aA4PVMAAAAJ) · [Semantic Scholar](https://www.semanticscholar.org/author/2361225201)
+
 **Tree-based speculative decoding for LLM inference over bandwidth-limited
 edge-cloud links.** RelayTree splits draft-tree generation between an edge
 small language model (SLM) and the cloud. The edge sends prefix token IDs;
