@@ -20,13 +20,11 @@ keeping the prefix uplink payload small.
 
 ## How RelayTree Works
 
-![RelayTree workflow: the edge SLM drafts a prefix subtree, sends its token IDs, and the cloud replays the prefix, completes the tree, and verifies candidates with the target LLM.](docs/assets/relaytree-overview.png)
-
 The split depth **s** controls how much of the tree is drafted at the edge.
 Cloud replay reconstructs the SLM state from the received prefix tokens before
 the remaining tree is generated. The target LLM then verifies the candidates
-and extends the output sequence. The diagram illustrates the relay scheme;
-the reference implementation also supports all-cloud and full-edge drafting.
+and extends the output sequence. The reference implementation also supports
+all-cloud and full-edge drafting.
 
 ## Core Results
 
@@ -55,7 +53,7 @@ relaytree/sampling/       RelayTree, QS, and autoregressive decoding
 relaytree/inference/      tree construction, replay, and verification
 relaytree/models/         Pythia and Qwen2 Tree-Attention backends
 plotresult/               final figures used in the paper
-docs/assets/              README method diagram and figure preview
+docs/assets/              preview of the original paper figure
 ```
 
 ## Paper Figures
